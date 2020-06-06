@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Bo OK!</title>
+
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600&family=Noto+Sans+TC&display=swap">
+		
+		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon.png') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename="css/font-awesome.min.css") }}">
+		
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+		<script src="https://kit.fontawesome.com/56eb0c9dae.js" crossorigin="anonymous"></script>
+		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+		<script src="{{ url_for('static', filename='js/functions.js')}}"></script>
+		<script src="{{ url_for('static', filename='js/show.js') }}"></script>
+	</head>
+	<body>
+		{% include 'header.html' %}
+		{% if datas %}
+		<section id="latest" class="show-background">
+			<div class="jumbotron">
+				<div class="container show-container">
+					<div class="row">
+						<div class="col-md-6 offset-md-3 text-center">
+							<h3>搜尋結果</h3>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-4 offset-md-4">
+							<div class="outer">
+								<div class="upper">
+									<img class="" src="{{ datas[0].img }}">
+									<div class="inner-text">
+										<h4>NTD: {{ datas[0].price }}</h4>
+									</div>
+								</div>
+								<div class="lower">
+									<h3>{{ datas[0].name }}</h3>
+									<span><i class="fas fa-user"></i>{{ datas[0].writter }}</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="container">
+				<div class="card text-center">
+					<div class="list-group">
+						{% for data in datas %}
+						<a href="{{ data.link }}" class="list-group-item list-group-item-action">{{ data.price }}</a>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			{% else %}
+			<h5>找不到結果</h5>
+			{% endif %}
+		</section>
+		
+	</body>
+</html>

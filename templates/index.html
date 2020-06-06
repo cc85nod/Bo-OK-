@@ -3,102 +3,46 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<title>ohmyBook</title>
+		<title>Bo OK!</title>
 
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600&family=Noto+Sans+TC&display=swap">
 		
-		<link rel="shortcut icon" href="">
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
+		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon.png') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename="css/font-awesome.min.css") }}">
+		
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 		<script src="https://kit.fontawesome.com/56eb0c9dae.js" crossorigin="anonymous"></script>
+		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+		<script src="{{ url_for('static', filename='js/functions.js')}}"></script>
+		<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 	</head>
 	<body>
-		<header>
-			<div class="container">
-				<nav class="navbar navbar-expand-lg navbar-light">
-					<a class="navbar-brand" href="#">
-						<img id="logo" src="{{ url_for('static', filename='images/icon.jpg') }}">
-					</a>
-					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-					</button>
-				
-					<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul class="navbar-nav mr-auto">
-						<li class="nav-item">
-							<a class="nav-link" href="/">首頁<span class="sr-only">(current)</span></a>
-						</li>
-						<li class="nav-item">
-						<a class="nav-link" href="#">暢銷榜</a>
-						</li>
-						<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							書籍分類
-						</a>
-						<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-							<a class="dropdown-item" href="#">科幻</a>
-							<a class="dropdown-item" href="#">愛情</a>
-							<a class="dropdown-item" href="#">懸疑</a>
-						</div>
-						</li>
-					</ul>
-					<form class="form-inline my-2 my-lg-0">
-						<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-						<button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜尋書籍</button>
-					</form>
-					</div>
-				</nav>
-			</div>
-		</header>
-
-
+		{% include 'header.html' %}
 		<section id="intro">
 			<div class="jumbotron">
 				<div class="container">
 					<div class="row">
-						<div class="col-md-12">
-							<h1>ohmyBook，你的閱讀好夥伴</h1>
-							<p class="lead">快來加入我們！</p>
-							<a class="btn" href="/login">Join us</a>
+						<div class="col-md-6 offset-md-3 text-center">
+							<h1>隨意查查，什麼都行。</h1>
+							<form action="{{ url_for('show') }}" method="GET" onsubmit="return search_empty();">
+								<div class="input-group">
+								<input type="text" name="book_name" class="form-control form-control-lg search-field" id="book_name" placeholder="搜尋書籍" />
+								<span class="input-group-append">
+									<button type="submit" class="btn btn-outline-secondary border-left-0 search-btn">
+										<i class="fa fa-search"></i>
+									</button>
+								</span>
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>
 			</div>
 		</section>
-
-
-		<section id="second">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-8 offset-md-2 text-center">
-						<h3>暢銷書籍</h3>
-
-						<div class="row">
-							<div class="col-md-4">
-								<img src="{{ url_for('static', filename='images/inner.jpg') }}">
-								<h5>name</h5>
-							</div>
-							<div class="col-md-8 text-left">
-								<p class="lead">
-									hello
-								</p>
-								<p>
-									first
-								</p>
-								<p>
-									second
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
 
 		<section id="latest">
 			<div class="container">
@@ -107,111 +51,55 @@
 						<h3>最新書籍</h3>
 					</div>
 				</div>
+				{% for datas in sdatas %}
 				<div class="row">
+					{% for data in datas %}
 					<div class="col-md-4">
 						<div class="outer">
-							<a href="#">
+							<a href="{{ data.link }}">
 								<div class="upper">
-									<img src="{{ url_for('static', filename='images/gray.jpg')}}">
+									<img class="" src="{{ data.img }}">
 									<div class="inner-text">
-										<span>🚚</span>
-										<h4>NTD: 600</h4>
+										<a href="{{ data.link }}"><span>🚚</span></a>
+										<h4>NTD: {{ data.price }}</h4>
 									</div>
 								</div>
 								<div class="lower">
-									<h3>美好的回憶</h3>
-									<span><i class="fab fa-angellist"></i>小明走在路上遇到小華...</span>
+									<h3>{{ data.name }}</h3>
+									<span><i class="fas fa-user"></i>{{ data.writter }}</span>
 								</div>
 							</a>
 						</div>
 					</div>
-					<div class="col-md-4">
-						<div class="outer">
-							<a href="#">
-								<div class="upper">
-									<img src="{{ url_for('static', filename='images/gray.jpg')}}">
-									<div class="inner-text">
-										<span>🚚</span>
-										<h4>NTD: 600</h4>
-									</div>
-								</div>
-								<div class="lower">
-									<h3>美好的回憶</h3>
-									<span><i class="fab fa-angellist"></i>小明走在路上遇到小華...</span>
-								</div>
-							</a>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="outer">
-							<a href="#">
-								<div class="upper">
-									<img src="{{ url_for('static', filename='images/gray.jpg')}}">
-									<div class="inner-text">
-										<span>🚚</span>
-										<h4>NTD: 600</h4>
-									</div>
-								</div>
-								<div class="lower">
-									<h3>美好的回憶</h3>
-									<span><i class="fab fa-angellist"></i>小明走在路上遇到小華...</span>
-								</div>
-							</a>
-						</div>
-					</div>
+					{% endfor %}
 				</div>
+				{% endfor %}
 			</div>
 		</section>
 
-		<section id="email">
+		<section id="email" class="email">
 			<div class="container">
 				<div class="row">
 					<div class="col-md-8 offset-md-2 text-center">
-						<h3>訂閱我們！</h3>
+						<h3>訂閱，獲得第一手消息。</h3>
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-8 offset-md-2 text-left">
-						<p>獲得最新書籍資訊</p>
-						<div class="input-group input-group-lg">
-							<input type="text" class="form-control" placeholder="Email" aria-label="Email" aria-describedby="basic-addon2">
-							<div class="input-group-append">
-								<span class="input-group-text" id="basic-addon2">@example.com</span>
+					<form action="{{ url_for('register') }}" method="POST" style="width: 100%;">
+						<div class="col-md-8 offset-md-2">
+							<div class="input-group input-group-lg">
+							<input type="email" name="email" class="form-control" id="email" placeholder="Email" />
+								<span class="input-group-append">
+								<button type="submit" class="btn btn-outline-secondary border-left-0">
+									<i class="fa fa fa-envelope"></i>
+								</button>
+								</span>
 							</div>
 						</div>
-						<a class="btn text-center" href="#">送出</a>
-					</div>
+					</form>
 				</div>
 			</div>
 		</section>
-
-		<footer>
-			<div class="container">
-				<div class="row">
-					<div class="col-md-4 text-left">
-						<img id="logo" src="{{ url_for('static', filename='images/icon.jpg') }}">
-						<p>welcome !</p>
-					</div>
-					<div class="col-md-4 text-left">
-						<h4>連結</h4>
-						<ul>
-							<li><a href="#">主頁</a></li>
-							<li><a href="#">主頁</a></li>
-						</ul>
-						<ul>
-							<li><a href="#">主頁</a></li>
-							<li><a href="#">主頁</a></li>
-						</ul>
-					</div>
-					<div class="col-md-4 text-left">
-						<h4>聯絡我們</h4>
-						<p>
-							Phone: 0912345678<br>
-							Email: <a href="mailto:cc85nod@gmail.com">cc85nod@gmail.com</a>
-						</p>
-					</div>
-				</div>
-			</div>
-		</footer>
+	{% include 'footer.html' %}
 	</body>
 <html>
