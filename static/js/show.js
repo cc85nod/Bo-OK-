@@ -4,7 +4,3 @@ $(function () {
 		"background-size": "100%"
 	});
 })
-
-$(document).ready(function() {
-	$('.header').addClass('color_header');
-})

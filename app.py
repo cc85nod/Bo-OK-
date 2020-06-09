@@ -3,11 +3,11 @@ from flask import render_template
 from flask import url_for
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
-import packages.dbconfig
-import packages.crawler
+# import packages.dbconfig
+# import packages.crawler
 
 app = Flask(__name__, template_folder='templates')
-mydb = packages.dbconfig.db()
+# mydb = packages.dbconfig.db()
 
 test_hot_datas = [
 	{
@@ -127,4 +127,4 @@ def split_data(datas):
 	return new_datas
 
 if __name__=='__main__':
-	app.run(port=8000, threaded=True)
+	app.run(port=10000, threaded=True)
