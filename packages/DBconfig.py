@@ -14,21 +14,16 @@ class DB():
 	def __del__(self):
 		self.conn.close()
 
-	def insert(self, name, writer, img, price, link):
+	def addUser(self, email):
 		self.cursor.execute("""\
-		INSERT INTO bookprice (name,writer,img,price,link)
-		VALUES ('{}','{}','{}','{}','{}')\
-		""".format(name, writer, img, price, link))
+		INSERT INTO user (email)
+		VALUES ('{}')\
+		""".format(email))
 		self.conn.commit()
-
-	def insertDatas(self, datas):
-		for data in datas:
-			self.insert(data.name, data.writer, data.img, data.price, data.link)
-			self.conn.commit()
 
 	def getBook(self, name):
 		datas = self.cursor.execute("""\
-		SELECT name,writer,img,price_books,link_books from bookprice where name='{}'\
+		SELECT * from bookprice where name='{}'\
 		""".format(name))
 
 		if not datas:

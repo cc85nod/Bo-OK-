@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% include 'meta.html' %}
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+		<script src="{{ url_for('static', filename='js/functions.js')}}"></script>
+		<script src="{{ url_for('static', filename='js/hot.js') }}"></script>
+	</head>
+	<body id="body-restrict">
+		{% include 'header.html' %}
+		<section id="latest" class="show-background">
+			<div class="jumbotron min-vh-100 text-center d-flex flex-column m-0 justify-content-center">
+				<div class="container show-container">
+					<div class="row">
+						<div class="col-md-12 text-center">
+							<h3>熱門書籍</h3>
+						</div>
+					</div>
+					<div class="menu">
+						<div>
+							<button type="button" class="btn btn-dark menu-btn menu-btn-left">←</button>
+						</div>
+						<div>
+							<button type="button" class="btn btn-dark menu-btn menu-btn-right">→</button>
+						</div>
+						<div class="row menu-row">
+							{% for data in datas %}
+							<div class="col-md-4">
+								<div class="outer">
+									<a href="{{ data.link }}">
+										<div class="upper">
+											<img class="" src="{{ data.img }}">
+											<div class="inner-text">
+												<a href="{{ data.link }}"><h4>🚚 NTD: {{ data.price }}</h4></a>
+											</div>
+										</div>
+										<div class="lower">
+											<h3>{{ data.name }}</h3>
+											<span><i class="fas fa-user"></i>{{ data.writter }}</span>
+										</div>
+									</a>
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</body>
+</html>

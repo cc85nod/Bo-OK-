@@ -2,11 +2,15 @@ from flask import Flask
 from flask import render_template
 from flask import url_for
 from flask import request
+from flask import redirect
 from flask_sqlalchemy import SQLAlchemy
+from email.utils import parseaddr
 import packages.DBconfig
+import packages.Emailer
 
 app = Flask(__name__, template_folder='templates')
 mydb = packages.DBconfig.DB()
+myemailer = packages.Emailer.Emailer()
 
 test_hot_datas = [
 	{
@@ -84,28 +88,34 @@ test_datas = [
 	},
 ]
 
-# 首頁
+# 首頁/顯示新書
 @app.route('/')
 def index():
-	# datas = mydb.getBook("鬼滅之刃")
+	# datas = mydb.getNewBook()
 	return render_template('index.html', datas=test_datas)
 
 # 熱門書單
 @app.route('/hot')
 def hot():
-	pass
+	# datas = mydb.getHotBook()
+	return render_template('hot.html', datas=test_datas)
 
 # 訂閱
 @app.route('/register')
 def register():
-	pass
+	email = request.args.get('email', type=str)
+	if parseaddr(email)[1] != '':
+		# mydb.addUser(email)
+		pass
+
+	return render_template('index.html', datas=test_datas)
 
 # 找書
 @app.route('/show')
 def show():
 	# book_name = request.args.get('book_name', type=str)
 	# if book_name is None:
-	# 	return render_template('index.html')
+		# return render_template('index.html')
 	
 	# datas = mydb.getBook(book_name)
 	

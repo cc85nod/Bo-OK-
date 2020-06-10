@@ -1,14 +1,31 @@
-$(window).scroll(function() {
+
+$(document).ready(function() {
+	$("header").mouseover(function() {
+		$(this).addClass("color_header");
+	});
+
+	$("header").mouseleave(function() {
+		var scroll = $(window).scrollTop();
+		
+		if (scroll < 200) {
+			$(this).removeClass("color_header");
+		}
+	});
+
+	
+})
+
+
+$(window).scroll(function(e) {
 	var sticky = $('.header'),
 		scroll = $(window).scrollTop();
 
 	if (scroll >= 200) {
-		sticky.addClass('color_header')
+		sticky.addClass('color_header');
 	} else {
-		sticky.removeClass('color_header')
+		sticky.removeClass('color_header');
 	}
 })
-
 
 $(function () {
 	var images = [
@@ -29,7 +46,6 @@ $(function () {
 function search_empty() {
 	var x = document.getElementById('book_name').value;
 	console.log(x);
-
 	if(x == "") {
 		return false;
 	}
@@ -37,25 +53,48 @@ function search_empty() {
 }
 
 $(document).ready(function() {
+	var item_count = $('.menu .col-md-4').length;
+	
 	$('.menu-btn-left').click(function() {
-	var currentT = $('.menu-row').css('transform').split(/[()]/)[1];
+		var carsize = $('.menu .col-md-4').width();
+		var currentT = $('.menu-row').css('transform').split(/[()]/)[1];
 		var posX = currentT.split(',')[4];
-		var left_offset = parseInt(posX) + 100;
-		var right_offset = parseInt(posX) - 100;
-		
-		console.log('translateX('+ left_offset +')');
-		$('.menu-row').animate({
-			transform: 'translateX('+ left_offset +')'
-		}, 'slow');
+		var left_offset = parseInt(posX) + parseInt(carsize) + 30;
+
+		if (parseInt(posX)*-1 >= 0) {
+			$('.menu-row').css(
+				"transform", "translateX("+left_offset+"px)"
+			);
+		}
 	});
+
 	$('.menu-btn-right').click(function() {
-		$('.menu-row').animate({
-			
-		}, {
-			step: function() {
-				$(this).css('transform', 'translateX('+ right_offset +')');
-			},
-			duration: 'slow',
-		}, 'linear');
+		var item_count = parseInt($('.menu .col-md-4').length) - 2;
+		var carsize = $('.menu .col-md-4').width();
+		var currentT = $('.menu-row').css('transform').split(/[()]/)[1];
+		var posX = currentT.split(',')[4];
+		var right_offset = parseInt(posX) - parseInt(carsize) - 30;
+
+		if (parseInt(posX)*-1 <= (parseInt(carsize)+30)*(parseInt(item_count)-1)) {
+			$('.menu-row').css(
+				"transform", "translateX("+right_offset+"px)"
+			);
+		}
 	});
 })
+
+function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
+function checkEmail() {
+	var email = document.getElementById('email').value;
+
+	if (!validateEmail(email)) {
+		alert("請輸入正確格式的 Email");
+		return false;
+	}
+	alert("成功！");
+	return true;
+}

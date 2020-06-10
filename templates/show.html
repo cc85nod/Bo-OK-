@@ -1,21 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-		<title>Bo OK!</title>
-
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600&family=Noto+Sans+TC&display=swap">
-		
-		<link rel="shortcut icon" href="{{ url_for('static', filename='images/icon.png') }}">
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-		<link rel="stylesheet" href="{{ url_for('static', filename="css/font-awesome.min.css") }}">
-		
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-		<script src="https://kit.fontawesome.com/56eb0c9dae.js" crossorigin="anonymous"></script>
-		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-
+		{% include 'meta.html' %}
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 		<script src="{{ url_for('static', filename='js/functions.js')}}"></script>
 		<script src="{{ url_for('static', filename='js/show.js') }}"></script>
@@ -30,7 +16,7 @@
 						<div class="col-md-4">
 							<div class="outer">
 								<div class="upper">
-									<img class="" src="{{ datas[0].img }}">
+									<img src="{{ datas[0].img }}">
 								</div>
 								<div class="lower">
 									<h3>{{ datas[0].name }}</h3>
