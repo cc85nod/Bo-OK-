@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 		<title>Bo OK!</title>
 
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600&family=Noto+Sans+TC&display=swap">
@@ -20,25 +20,17 @@
 		<script src="{{ url_for('static', filename='js/functions.js')}}"></script>
 		<script src="{{ url_for('static', filename='js/show.js') }}"></script>
 	</head>
-	<body>
+	<body id="body-restrict">
 		{% include 'header.html' %}
 		{% if datas %}
 		<section id="latest" class="show-background">
-			<div class="jumbotron">
+			<div class="jumbotron min-vh-100 text-center d-flex flex-column m-0 justify-content-center">
 				<div class="container show-container">
 					<div class="row">
-						<div class="col-md-6 offset-md-3 text-center">
-							<h3>搜尋結果</h3>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-4 offset-md-4">
+						<div class="col-md-4">
 							<div class="outer">
 								<div class="upper">
 									<img class="" src="{{ datas[0].img }}">
-									<div class="inner-text">
-										<h4>NTD: {{ datas[0].price }}</h4>
-									</div>
 								</div>
 								<div class="lower">
 									<h3>{{ datas[0].name }}</h3>
@@ -46,22 +38,24 @@
 								</div>
 							</div>
 						</div>
+						<div class="col-md-2"></div>
+						<div class="col-md-6">
+							<div class="container">
+								<div class="card text-center">
+									<div class="list-group">
+										{% for data in datas %}
+										<a href="{{ data.link }}" class="list-group-item list-group-item-action">{{ data.price }}</a>
+										{% endfor %}
+									</div>
+								</div>
+							</div>
+							{% else %}
+							<h5>找不到結果</h5>
+							{% endif %}
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="container">
-				<div class="card text-center">
-					<div class="list-group">
-						{% for data in datas %}
-						<a href="{{ data.link }}" class="list-group-item list-group-item-action">{{ data.price }}</a>
-						{% endfor %}
-					</div>
-				</div>
-			</div>
-			{% else %}
-			<h5>找不到結果</h5>
-			{% endif %}
 		</section>
-		
 	</body>
 </html>

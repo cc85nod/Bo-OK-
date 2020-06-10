@@ -35,3 +35,27 @@ function search_empty() {
 	}
 	return true;
 }
+
+$(document).ready(function() {
+	$('.menu-btn-left').click(function() {
+	var currentT = $('.menu-row').css('transform').split(/[()]/)[1];
+		var posX = currentT.split(',')[4];
+		var left_offset = parseInt(posX) + 100;
+		var right_offset = parseInt(posX) - 100;
+		
+		console.log('translateX('+ left_offset +')');
+		$('.menu-row').animate({
+			transform: 'translateX('+ left_offset +')'
+		}, 'slow');
+	});
+	$('.menu-btn-right').click(function() {
+		$('.menu-row').animate({
+			
+		}, {
+			step: function() {
+				$(this).css('transform', 'translateX('+ right_offset +')');
+			},
+			duration: 'slow',
+		}, 'linear');
+	});
+})

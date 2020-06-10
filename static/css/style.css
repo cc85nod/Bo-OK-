@@ -11,6 +11,16 @@ input:focus, .form-control:focus {
 	outline: none;
 }
 
+.body-restrict {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+#background-restrict {
+	margin-bottom: 0;
+}
+
 i {
 	margin-right: 10px;
 }
@@ -118,6 +128,11 @@ header li {
 	background: rgb(248, 248, 248);
 }
 
+#latest.show-background {
+	padding: 0px;
+	background: rgb(248, 248, 248);
+}
+
 #latest h3 {
 	margin-bottom: 80px;
 }
@@ -220,6 +235,9 @@ footer ul li a {
 }
 
 @media only screen and (max-width: 768px) {
+	#latest .col-md-4 {
+		margin-bottom: 30px;
+	}
 	#latest .outer {
 		margin-bottom: 30px;
 	}
@@ -239,4 +257,31 @@ footer ul li a {
 
 .show-container {
 	position: relative;
+}
+
+.menu-row {
+	flex-wrap: nowrap;
+	margin: 6px;
+	transform: translateX(0);
+}
+
+.menu {
+	overflow-x: hidden;
+	position: relative;
+}
+
+.menu-btn {
+	border-radius: 50%;
+	z-index: 3;
+	position: absolute;
+	text-align: center;
+	top: 50%;
+}
+
+.menu-btn-left {
+	left: 3px;
+}
+
+.menu-btn-right {
+	right: 3px;
 }
