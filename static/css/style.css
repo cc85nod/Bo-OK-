@@ -142,7 +142,6 @@ header li {
 }
 
 #latest .inner-text {
-	position: absolute;
 	bottom: -15px;
 	left: 12px;
 }

@@ -8,8 +8,7 @@ from packages.BookCrawler import *
 
 class DB():
 	def __init__(self):
-		self.conn = sqlite3.connect('book.db')
-		self.cursor = self.conn.cursor()
+		self.conn = sqlite3.connect('book.db', check_same_thread=False)
 
 	def __del__(self):
 		self.conn.close()
@@ -21,16 +20,6 @@ class DB():
 		""".format(email))
 		self.conn.commit()
 
-	def getBook(self, name):
-		datas = self.cursor.execute("""\
-		SELECT * from bookprice where name='{}'\
-		""".format(name))
-
-		if not datas:
-			datas = searchbook(target)
-			self.storeSearch(datas)
-
-		return datas.fetchall()
 	"""
 	更新資料庫
 	"""
@@ -70,7 +59,6 @@ class DB():
 				tmplist=self.cursor.fetchall()
 				self.CountRank(tmplist[0][0],"hotbook")
 		for binfo in getSANMINrank():
-			#print()
 			self.cursor.execute('select id from hotbook where name = ? ',(binfo["List"][0],))
 			tmplist=self.cursor.fetchall()
 			if(tmplist):
@@ -85,6 +73,7 @@ class DB():
 				tmplist=self.cursor.fetchall()
 				self.CountRank(tmplist[0][0],"hotbook")
 		self.conn.commit()
+
 	"""
 	儲存搜尋的結果
 	"""
@@ -133,56 +122,176 @@ class DB():
 				self.CountRank(tmplist[0][0],"search")
 		self.conn.commit()
 
-		"""
-		計算書籍在各熱門榜單的出現次數
-		找出最低價格&書店名字
-		bookid => 書本的 id
-		mode => 搜尋, 暢銷書
-		"""
-		def CountRank(self, bookid, mode):
-			count=0
-			lowestprice=1000000
-			lowestname=""
+	"""
+	計算書籍在各熱門榜單的出現次數
+	找出最低價格&書店名字
+	bookid => 書本的 id
+	mode => 搜尋, 暢銷書
+	"""
+	def CountRank(self, bookid, mode):
+		count=0
+		lowestprice=1000000
+		lowestname=""
 
-			if(mode=="hotbook"):
-				self.cursor.execute('select price_books from hotbook where id = ? ',(bookid,))
-			elif(mode=="search"):
-				self.cursor.execute('select price_books from book where id = ? ',(bookid,))
-			tmp = self.cursor.fetchall()
-			if(tmp!=[(None,)]):
-				count += 1
-				if(tmp[0][0]<=lowestprice):
-					lowestprice=tmp[0][0]
-					lowestname="博客來"
-			if(mode=="hotbook"):
-				self.cursor.execute('select price_kingstone from hotbook where id = ? ',(bookid,))
-			elif(mode=="search"):
-				self.cursor.execute('select price_kingstone from book where id = ? ',(bookid,))
-			tmp = self.cursor.fetchall()
-			if(tmp!=[(None,)]):
-				count += 1
-				if(tmp[0][0]<lowestprice):
-					lowestprice=tmp[0][0]
-					lowestname="金石堂"
-				elif(tmp[0][0]==lowestprice):
-					lowestname+=",金石堂"
-			if(mode=="hotbook"):
-				self.cursor.execute('select price_sanmin from hotbook where id = ? ',(bookid,))
-			elif(mode=="search"):
-				self.cursor.execute('select price_sanmin from book where id = ? ',(bookid,))
-			tmp = self.cursor.fetchall()
-			if(tmp!=[(None,)]):
-				count += 1
-				if(tmp[0][0]<lowestprice):
-					lowestprice=tmp[0][0]
-					lowestname="三民"
-				elif(tmp[0][0]==lowestprice):
-					lowestname+=",三民"
-			if(mode=="hotbook"):
-				self.cursor.execute('update hotbook set ranktimes = ? where id = ?', (count,bookid))
-				self.cursor.execute('update hotbook set lowest_price = ? where id = ?', (lowestprice,bookid))
-				self.cursor.execute('update hotbook set lowest_name = ? where id = ?', (lowestname,bookid))
-			elif(mode=="search"): 
-				self.cursor.execute('update book set ranktimes = ? where id = ?', (count,bookid))
-				self.cursor.execute('update book set lowest_price = ? where id = ?', (lowestprice,bookid))
-				self.cursor.execute('update book set lowest_name = ? where id = ?', (lowestname,bookid))
+		if(mode=="hotbook"):
+			self.cursor.execute('select price_books from hotbook where id = ? ',(bookid,))
+		elif(mode=="search"):
+			self.cursor.execute('select price_books from book where id = ? ',(bookid,))
+		tmp = self.cursor.fetchall()
+		if(tmp!=[(None,)]):
+			count += 1
+			if(tmp[0][0]<=lowestprice):
+				lowestprice=tmp[0][0]
+				lowestname="博客來"
+		if(mode=="hotbook"):
+			self.cursor.execute('select price_kingstone from hotbook where id = ? ',(bookid,))
+		elif(mode=="search"):
+			self.cursor.execute('select price_kingstone from book where id = ? ',(bookid,))
+		tmp = self.cursor.fetchall()
+		if(tmp!=[(None,)]):
+			count += 1
+			if(tmp[0][0]<lowestprice):
+				lowestprice=tmp[0][0]
+				lowestname="金石堂"
+			elif(tmp[0][0]==lowestprice):
+				lowestname+=",金石堂"
+		if(mode=="hotbook"):
+			self.cursor.execute('select price_sanmin from hotbook where id = ? ',(bookid,))
+		elif(mode=="search"):
+			self.cursor.execute('select price_sanmin from book where id = ? ',(bookid,))
+		tmp = self.cursor.fetchall()
+		if(tmp!=[(None,)]):
+			count += 1
+			if(tmp[0][0]<lowestprice):
+				lowestprice=tmp[0][0]
+				lowestname="三民"
+			elif(tmp[0][0]==lowestprice):
+				lowestname+=",三民"
+		if(mode=="hotbook"):
+			self.cursor.execute('update hotbook set ranktimes = ? where id = ?', (count,bookid))
+			self.cursor.execute('update hotbook set lowest_price = ? where id = ?', (lowestprice,bookid))
+			self.cursor.execute('update hotbook set lowest_name = ? where id = ?', (lowestname,bookid))
+		elif(mode=="search"): 
+			self.cursor.execute('update book set ranktimes = ? where id = ?', (count,bookid))
+			self.cursor.execute('update book set lowest_price = ? where id = ?', (lowestprice,bookid))
+			self.cursor.execute('update book set lowest_name = ? where id = ?', (lowestname,bookid))
+
+	def getBooksByIdsAndBType(self, ids, btype):
+		allBooks = []
+		for book_id in ids:
+			self.cursor.execute('''\
+			select
+				name,
+				writer,
+				img,
+				price_books,
+				link_books,
+				price_kingstone,
+				link_kingstone,
+				price_sanmin,
+				link_sanmin
+			from {} where id = {}\
+			'''.format(btype, book_id[0]))
+
+			bookstmp = self.cursor.fetchall()
+			books = {}
+			kingstone = {}
+			sanmin = {}
+
+			if bookstmp[0][3] is not None and bookstmp[0][4] is not None:
+				books={
+					"book_name":bookstmp[0][0],
+					"writer":bookstmp[0][1],
+					"img":bookstmp[0][2],
+					"price":bookstmp[0][3],
+					"link":bookstmp[0][4],
+					"book_store":"博客來"
+				}
+
+			if bookstmp[0][5] is not None and bookstmp[0][6] is not None:
+				kingstone={
+					"book_name":bookstmp[0][0],
+					"writer":bookstmp[0][1],
+					"img":bookstmp[0][2],
+					"price":bookstmp[0][5],
+					"link":bookstmp[0][6],
+					"book_store":"金石堂"
+				}
+
+			if bookstmp[0][7] is not None and bookstmp[0][8] is not None:
+				sanmin={
+					"book_name":bookstmp[0][0],
+					"writer":bookstmp[0][1],
+					"img":bookstmp[0][2],
+					"price":bookstmp[0][7],
+					"link":bookstmp[0][8],
+					"book_store":"三民"
+				}
+
+
+			row = []
+			if books:
+				row.append(books)
+			if kingstone:
+				row.append(kingstone)
+			if sanmin:
+				row.append(sanmin)
+
+			row = sorted(row, key=lambda x: x['price'])
+			allBooks.append(row)
+
+		return allBooks
+
+	def getHotBooksByIds(self, ids):
+		return self.getBooksByIdsAndBType(ids, "hotbook")
+
+	def getNewBooksByIds(self, ids):
+		return self.getBooksByIdsAndBType(ids, "newbook")
+
+	def getBooksByIds(self, ids):
+		return self.getBooksByIdsAndBType(ids, "book")
+
+	def topHotBook(self):
+		total=0
+		self.cursor.execute('select id from hotbook where ranktimes = 3')
+		ids = self.cursor.fetchall()
+		rank3book = self.getHotBooksByIds(ids)
+
+		self.cursor.execute('select id from hotbook where ranktimes = 2')
+		ids = self.cursor.fetchall()
+		rank2book = self.getHotBooksByIds(ids)
+			
+		self.cursor.execute('select id from hotbook where ranktimes = 1')
+		ids = self.cursor.fetchall()
+		rank1book = self.getHotBooksByIds(ids)
+
+		return rank3book+rank2book+rank1book
+
+	def randomNewBook(self):
+		total=0
+		self.cursor.execute('select id from newbook')
+		ids = self.cursor.fetchall()
+
+		newbooks = self.getNewBooksByIds(random.shuffle(ids)[:10])
+
+		return newbooks
+
+	def getBook(self, name):
+		ids = self.cursor.execute("""\
+		SELECT id from book where name LIKE '%{}%'\
+		""".format(name)).fetchall()
+		
+		if not ids:
+			datas = searchbook(name)
+			self.storeSearch(datas)
+
+			ids = self.cursor.execute("""\
+			SELECT id from book where name LIKE '%{}%'\
+			""".format(name)).fetchall()
+		
+		return self.getBooksByIds(ids)[:10]
+
+	def getUsers(self):
+		return self.cursor.execute("""\
+		SELECT email from user'\
+		""").fetchall()

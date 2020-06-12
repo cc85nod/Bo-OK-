@@ -37,7 +37,7 @@
 						<h3>最新書籍</h3>
 					</div>
 				</div>
-				<div class="menu">
+				<div class="menu text-center">
 					<div>
 						<button type="button" class="btn btn-dark menu-btn menu-btn-left">←</button>
 					</div>
@@ -48,16 +48,19 @@
 						{% for data in datas %}
 						<div class="col-md-4">
 							<div class="outer">
-								<a href="{{ data.link }}">
+								<a href="{{ data[0].link }}">
 									<div class="upper">
-										<img class="" src="{{ data.img }}">
+										<img class="" src="{{ data[0].img }}">
 										<div class="inner-text">
-											<a href="{{ data.link }}"><h4>🚚 NTD: {{ data.price }}</h4></a>
+											<a href="{{ data[0].link }}"><h4> 🔥最低價🔥 {{ data[0].book_store }} NTD: {{ data[0].price }}</h4></a>
+											{% for row_data in data[1:] %}
+												<a href="{{ row_data.link }}"><h4> 🚚 {{ row_data.book_store }} NTD: {{ row_data.price }}</h4></a>
+											{% endfor %}
 										</div>
 									</div>
 									<div class="lower">
-										<h3>{{ data.name }}</h3>
-										<span><i class="fas fa-user"></i>{{ data.writter }}</span>
+										<h3>{{ data[0].book_name }}</h3>
+										<span><i class="fas fa-user"></i>{{ data[0].writer }}</span>
 									</div>
 								</a>
 							</div>
