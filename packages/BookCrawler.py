@@ -18,8 +18,11 @@ def searchbook(target):
     r = requests.get(booksURL)
     soup = BeautifulSoup(r.text,"html.parser") 
     sel = soup.select("ul.searchbook li.item")
-    
     for s in sel:
+        link=s.find('a').get('href')
+        spl=link.split('/')
+        if(not(spl[4][0]<='9' and spl[4][0]>='0') and not(spl[4][0]=='E')and not(spl[4][0]=='R')):
+            continue
         name=s.find('a').get('title')
         img=s.find('a').find('img').get('data-original')
         img=img.split('&')[0]
@@ -29,7 +32,7 @@ def searchbook(target):
             writer+=i.get('title')
             writer+=' '
         price=s.find('span',class_="price").find_all('b')[-1].string
-        link=s.find('a').get('href')
+        
         book={
                 "List":[name,link,img,writer,int(price)]
             }
@@ -40,7 +43,6 @@ def searchbook(target):
     sel = soup.select("li.displayunit div.division1")
     basicURL="https://www.kingstone.com.tw"
     KINGSTONEbook=[]
-
     for s in sel:
         temp=s.find('span',class_='book').string
         if(temp.find("書")==-1):
@@ -58,21 +60,27 @@ def searchbook(target):
             for i in temp:
                 writer+=i.string+' '
         
-        price=s.find('div',class_='buymixbox').find_all('span')[1].find('b').string
+        price=s.find('div',class_='buymixbox').find_all('span')[-2].find('b').string
         book={
                 "List":[name,link,img,writer,int(price)]
             }
         KINGSTONEbook.append(book)
+    
     
     basicURL="https://www.sanmin.com.tw"
     SANMINbook=[]
     r = requests.get(sanminURL)
     soup = BeautifulSoup(r.text,"html.parser") 
     sel = soup.select("div.ProductView div.condition")
-
     for s in sel:
-        img=s.find('div',class_='resultBooksImg').find('a').find('img').get('src')
+        img=s.find('div',class_='resultBooksImg').find('a').find('img').get('original')
+        name=s.find('h3').find('a').text
+        name=name.split('.')[-1]
+
         link=basicURL+s.find('div',class_='resultBooksImg').find('a').get('href')
+        if(s.find('span',class_='ProdAu')==None):
+            continue
+        
         temp=s.find('span',class_='ProdAu').find_all('a')
         writer=""
         for i in temp:
@@ -87,27 +95,24 @@ def searchbook(target):
             price=price[3:-1]
         else:
             price=price.string
-        name=s.find('h3').find('a').string
-        name=name.split('.')[-1]
+        
         book={
                 "List":[name,link,img,writer,int(price)]
             }
         SANMINbook.append(book)
-
+      #  print(book['List'][2])
     return [BOOKSbook,KINGSTONEbook,SANMINbook]
 
-"""
-取得三民書局的暢銷榜
-"""
+
+
 def getSANMINrank():
     basicURL="https://www.sanmin.com.tw"
+    
     books=[]
-
-    for i in range(4):#如果要抓少一點改這邊 1次=20本
+    for i in range(3):#如果要抓少一點改這邊 1次=20本
         r = requests.get(basicURL+"/promote/top/?pi="+str(i+1)) 
         soup = BeautifulSoup(r.text,"html.parser") 
         sel = soup.find('div',id='normal-list').select("div.condition")
-
         for s in sel:
             img=s.find("img").get('original')
             link=basicURL+s.find("div",class_='resultBooksInfor').find("a").get('href')
@@ -127,17 +132,93 @@ def getSANMINrank():
             books.append(book)
     return books
 
-
-"""
-取得金石堂的暢銷榜
-"""
 def getKINGSTONErank():
     basicURL="https://www.kingstone.com.tw"
-    r = requests.get("https://www.kingstone.com.tw/bestseller/daily/all",headers=header) 
+    r = requests.get("https://www.kingstone.com.tw/bestseller/best/book",headers=header) 
     soup = BeautifulSoup(r.text,"html.parser") 
     sel = soup.select("div.proMain li.modProList") 
 
     books=[]
+    
+    for s in sel:
+        temp=s.find("div",class_="modProPic")
+        img=temp.find("img").get('data-src')
+        link=temp.find('a').get("href")
+        link=link.split('?')[0]
+        link=basicURL+link
+        name=temp.find("img").get('alt')
+        writer=s.find("div",class_="modProAuthor").find('a').string
+        price=s.find_all('b')[-1].string
+        book={
+            "List":[name,link,img,writer,int(price)]
+        }
+
+        books.append(book)
+
+    return books
+
+def getBOOKSrank():
+    r = requests.get("https://www.books.com.tw/web/sys_hourstop/home?loc=P_0022_more_001") 
+    soup = BeautifulSoup(r.text,"html.parser") 
+    sel = soup.select("div.clearfix li.item")
+    books=[]
+    for s in sel:
+        link=s.find("h4").find("a").get('href').split('?')[0]
+        spl=link.split('/')
+        if(not(spl[4][0]<='9' and spl[4][0]>='0') and not(spl[4][0]=='E')and not(spl[4][0]=='R')):
+            continue
+
+        img=s.find("img").get('src').split('&')[0]
+        name=s.find("h4").find("a").string
+        writer=s.find("ul").find("li").find("a")
+        if(writer==None):
+            writer=None
+        else:
+            writer=writer.string
+
+        list_price=s.find("ul").find("li",class_="price_a").find_all("b")
+        price=list_price[-1].string
+        book={
+            "List":[name,link,img,writer,int(price)]
+        }
+        books.append(book)
+    return books
+
+"""
+爬新書
+"""
+def newbook():
+    r = requests.get("https://www.books.com.tw/web/sys_newtopb/books/")
+    soup = BeautifulSoup(r.text,"html.parser") 
+    sel = soup.select("div.clearfix li.item")
+    BOOKSbook=[]
+    for s in sel:
+        link=s.find("h4").find("a").get('href').split('?')[0]
+        spl=link.split('/')
+        if(not(spl[4][0]<='9' and spl[4][0]>='0') and not(spl[4][0]=='E')and not(spl[4][0]=='R')):
+            continue
+
+        img=s.find("img").get('src').split('&')[0]
+        name=s.find("h4").find("a").string
+        writer=s.find("ul").find("li").find("a")
+        if(writer==None):
+            writer=None
+        else:
+            writer=writer.string
+
+        list_price=s.find("ul").find("li",class_="price_a").find_all("b")
+        price=list_price[-1].string
+        book={
+            "List":[name,link,img,writer,int(price)]
+        }
+        BOOKSbook.append(book)
+
+    basicURL="https://www.kingstone.com.tw"
+    r = requests.get("https://www.kingstone.com.tw/BestSeller/news/book",headers=header) 
+    soup = BeautifulSoup(r.text,"html.parser") 
+    sel = soup.select("div.proMain li.modProList") 
+
+    KINGSTONEbook=[]
     
     for s in sel:
         temp=s.find("div",class_="modProPic")
@@ -153,38 +234,35 @@ def getKINGSTONErank():
         book={
             "List":[name,link,img,writer,int(price)]
         }
+        KINGSTONEbook.append(book)
 
-        books.append(book)
 
-    return books
 
-"""
-取得博客來的暢銷榜
-"""
-def getBOOKSrank():
-    r = requests.get("https://www.books.com.tw/web/sys_hourstop/home?loc=P_0022_more_001") 
-    soup = BeautifulSoup(r.text,"html.parser") 
-    sel = soup.select("div.clearfix li.item")
-    books=[]
+    basicURL="https://www.sanmin.com.tw"    
+    SANMINbook=[]
+    for i in range(1):#如果要抓少一點改這邊 1次=20本
+        r = requests.get(basicURL+"/promote/hotbook/?id=00&vs=grid&pi="+str(i+1)+"&vs=list") 
+        soup = BeautifulSoup(r.text,"html.parser") 
+        sel = soup.find('div',id='normal-list').select("div.condition")
+        for s in sel:
+            img=s.find("img").get('original')
+            link=basicURL+s.find("div",class_='resultBooksInfor').find("a").get('href')
+            listwriter=s.find("p",class_='author').find('span',class_='green13').find_all('a')
+            temp=""
+            for j in listwriter:
+                temp+=j.string+' ' 
+                temp= temp.replace('\n','')
+                temp= temp.replace('   ','')
+            writer=temp
+            price=s.find("div",class_='resultBooksLayout').find('span',class_='price').string
+            name=s.find('h3').find('a').string
+            name=name.split('.')[-1]
+            name=name.split('－')[-1]
 
-    for s in sel:
-        link=s.find("h4").find("a").get('href').split('?')[0]
-        spl=link.split('/')
-        if(not(spl[4][0]<='9' and spl[4][0]>='0') and not(spl[4][0]=='E')and not(spl[4][0]=='R')):
-            continue
+            book={
+                "List":[name,link,img,writer,int(price)]
+            }
+            SANMINbook.append(book)
 
-        img=s.find("img").get('src')
-        name=s.find("h4").find("a").string
-        writer=s.find("ul").find("li").find("a")
-        if(writer==None):
-            writer=None
-        else:
-            writer=writer.string
 
-        list_price=s.find("ul").find("li",class_="price_a").find_all("b")
-        price=list_price[-1].string
-        book={
-            "List":[name,link,img,writer,int(price)]
-        }
-        books.append(book)
-    return books
+    return [BOOKSbook,KINGSTONEbook,SANMINbook]

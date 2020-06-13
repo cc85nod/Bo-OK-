@@ -15,8 +15,7 @@ myemailer = packages.Emailer.Emailer()
 # 首頁/顯示新書
 @app.route('/')
 def index():
-	datas = mydb.topHotBook()
-	# datas = mydb.getNewBook()
+	datas = mydb.randomNewBook()
 	return render_template('index.html', datas=datas)
 
 # 熱門書單
@@ -31,19 +30,26 @@ def register():
 	email = request.args.get('email', type=str)
 	if parseaddr(email)[1] != '':
 		mydb.addUser(email)
+	else:
+		url_for('index')
 
-	datas = mydb.topHotBook()
+	datas = mydb.randomNewBook()
+	myemailer.sendWelcomeMessage(email)
+
 	return render_template('index.html', datas=datas)
 
 # 找書
 @app.route('/show')
 def show():
 	book_name = request.args.get('book_name', type=str)
+	reg = ['\'', '"', ',', '\\', '/', '/$', '~', '.', '-', '=', '*', '~']
+	for i in reg:
+		if i in book_name:
+			url_for('index')
 	if book_name is None:
 		return render_template('index.html')
 	
 	datas = mydb.getBook(book_name)
-	
 	return render_template('show.html', datas=datas)
 
 if __name__=='__main__':

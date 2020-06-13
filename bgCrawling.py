@@ -1,7 +1,6 @@
 import packages.DBconfig
 import packages.Emailer
 import time
-from threading import Thread
 
 mydb = packages.DBconfig.DB()
 emailer = packages.Emailer.Emailer()
@@ -10,26 +9,33 @@ minute = 60
 hour = 60*60
 day = 24*60*60
 
-def UpdateHotBook(Thread):
-	def run(self):
-		mydb.resetHotBook()
-		sleep(day)
+def UpdateHotBook():
+	mydb.resetHotBook()
+	print("Update Hot Book Done")
 
-def UpdateNewBook(Thread):
-	def run(self):
-		mydb.resetNewBook()
-		sleep(day)
+def UpdateNewBook():
+	mydb.resetNewBook()
+	print("Update New Book Done")
 
-def MailNews(Thread):
-	def run(self):
-		users = mydb.getUsers()
+def UpdateBook():
+	mydb.resetBook()
+	print("Update Book Done")
 
-		for user in users:
-			emailer.sendMail(user, "Hello~")
+def MailNews():
+	users = mydb.getUsers()
+	
+	for user in users:
+		if user[0]:
+			emailer.sendMail(user[0], "Hello~")
 
-		sleep(6*hour)
+	print("Mail Done")
 
 def run():
-	UpdateHotBook().start()
-	UpdateNewBook().start()
-	MailNews().start()
+	UpdateHotBook()
+	UpdateNewBook()
+	UpdateBook()
+	# MailNews()
+
+while True:
+	run()
+	time.sleep(day)

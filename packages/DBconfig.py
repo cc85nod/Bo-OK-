@@ -4,11 +4,13 @@ table: bookprice
 column: id, name, writer, img, price, link
 """
 import sqlite3
+import random
 from packages.BookCrawler import *
 
 class DB():
 	def __init__(self):
 		self.conn = sqlite3.connect('book.db', check_same_thread=False)
+		self.cursor = self.conn.cursor()
 
 	def __del__(self):
 		self.conn.close()
@@ -27,7 +29,7 @@ class DB():
 		# 歸零id
 		self.cursor.execute('update sqlite_sequence set seq = 0 where name = "hotbook"')
 		# 清空資料庫
-		self.cursor.execute('DELETC FROM hotbook')
+		self.cursor.execute('DELETE FROM hotbook')
 
 		for binfo in getBOOKSrank():       
 			self.cursor.execute('select id from hotbook where name = ? ',(binfo["List"][0],))
@@ -72,6 +74,56 @@ class DB():
 				self.cursor.execute('select id from hotbook where name = ? ',(binfo["List"][0],))
 				tmplist=self.cursor.fetchall()
 				self.CountRank(tmplist[0][0],"hotbook")
+		self.conn.commit()
+
+	def resetNewBook(self):
+		self.cursor.execute('update sqlite_sequence set seq = 0 where name = "newbook"')
+		self.cursor.execute('delete from newbook')
+		newbooklist = newbook()
+
+		for binfo in newbooklist[0]:       
+			self.cursor.execute('select id from newbook where name = ? ',(binfo["List"][0],))
+			tmplist=self.cursor.fetchall()
+			if(tmplist):
+				updatelink = [binfo["List"][1],tmplist[0][0]]
+				updateprice = [binfo["List"][4],tmplist[0][0]]
+				self.cursor.execute('update newbook set link_books = ? where id = ?', updatelink)
+				self.cursor.execute('update newbook set price_books = ? where id = ?', updateprice)
+				self.CountRank(tmplist[0][0],"newbook")
+			else:
+				self.cursor.execute('insert into newbook(name,link_books,img,writer,price_books) values (?,?,?,?,?)', binfo["List"])
+				self.cursor.execute('select id from newbook where name = ? ',(binfo["List"][0],))
+				tmplist=self.cursor.fetchall()
+				self.CountRank(tmplist[0][0],"newbook")
+		for binfo in newbooklist[1]:
+			self.cursor.execute('select id from newbook where name = ? ',(binfo["List"][0],))
+			tmplist=self.cursor.fetchall()
+			if(tmplist):
+				updatelink = [binfo["List"][1],tmplist[0][0]]
+				updateprice = [binfo["List"][4],tmplist[0][0]]
+				self.cursor.execute('update newbook set link_kingstone = ? where id = ?', updatelink)
+				self.cursor.execute('update newbook set price_kingstone = ? where id = ?', updateprice)
+				self.CountRank(tmplist[0][0],"newbook")
+			else:
+				self.cursor.execute('insert into newbook(name,link_kingstone,img,writer,price_kingstone) values (?,?,?,?,?)', binfo["List"])
+				self.cursor.execute('select id from newbook where name = ? ',(binfo["List"][0],))
+				tmplist=self.cursor.fetchall()
+				self.CountRank(tmplist[0][0],"newbook")
+		for binfo in newbooklist[2]:
+			self.cursor.execute('select id from newbook where name = ? ',(binfo["List"][0],))
+			tmplist=self.cursor.fetchall()
+			if(tmplist):
+				updatelink = [binfo["List"][1],tmplist[0][0]]
+				updateprice = [binfo["List"][4],tmplist[0][0]]
+				self.cursor.execute('update newbook set link_sanmin = ? where id = ?', updatelink)
+				self.cursor.execute('update newbook set price_sanmin = ? where id = ?', updateprice)
+				self.CountRank(tmplist[0][0],"newbook")
+			else:
+				self.cursor.execute('insert into newbook(name,link_sanmin,img,writer,price_sanmin) values (?,?,?,?,?)', binfo["List"])
+				self.cursor.execute('select id from newbook where name = ? ',(binfo["List"][0],))
+				tmplist=self.cursor.fetchall()
+				self.CountRank(tmplist[0][0],"newbook")
+
 		self.conn.commit()
 
 	"""
@@ -138,7 +190,7 @@ class DB():
 		elif(mode=="search"):
 			self.cursor.execute('select price_books from book where id = ? ',(bookid,))
 		tmp = self.cursor.fetchall()
-		if(tmp!=[(None,)]):
+		if(tmp!=[(None,)] and tmp and tmp):
 			count += 1
 			if(tmp[0][0]<=lowestprice):
 				lowestprice=tmp[0][0]
@@ -148,7 +200,7 @@ class DB():
 		elif(mode=="search"):
 			self.cursor.execute('select price_kingstone from book where id = ? ',(bookid,))
 		tmp = self.cursor.fetchall()
-		if(tmp!=[(None,)]):
+		if(tmp!=[(None,)] and tmp):
 			count += 1
 			if(tmp[0][0]<lowestprice):
 				lowestprice=tmp[0][0]
@@ -160,7 +212,7 @@ class DB():
 		elif(mode=="search"):
 			self.cursor.execute('select price_sanmin from book where id = ? ',(bookid,))
 		tmp = self.cursor.fetchall()
-		if(tmp!=[(None,)]):
+		if(tmp!=[(None,)] and tmp):
 			count += 1
 			if(tmp[0][0]<lowestprice):
 				lowestprice=tmp[0][0]
@@ -175,6 +227,8 @@ class DB():
 			self.cursor.execute('update book set ranktimes = ? where id = ?', (count,bookid))
 			self.cursor.execute('update book set lowest_price = ? where id = ?', (lowestprice,bookid))
 			self.cursor.execute('update book set lowest_name = ? where id = ?', (lowestname,bookid))
+		
+		self.conn.commit()
 
 	def getBooksByIdsAndBType(self, ids, btype):
 		allBooks = []
@@ -228,7 +282,6 @@ class DB():
 					"book_store":"三民"
 				}
 
-
 			row = []
 			if books:
 				row.append(books)
@@ -268,11 +321,10 @@ class DB():
 		return rank3book+rank2book+rank1book
 
 	def randomNewBook(self):
-		total=0
-		self.cursor.execute('select id from newbook')
-		ids = self.cursor.fetchall()
-
-		newbooks = self.getNewBooksByIds(random.shuffle(ids)[:10])
+		
+		ids = self.cursor.execute('select id from newbook').fetchall()
+		
+		newbooks = self.getNewBooksByIds(random.sample(ids, len(ids))[:21])
 
 		return newbooks
 
@@ -289,9 +341,13 @@ class DB():
 			SELECT id from book where name LIKE '%{}%'\
 			""".format(name)).fetchall()
 		
-		return self.getBooksByIds(ids)[:10]
+		return self.getBooksByIds(ids)
 
 	def getUsers(self):
 		return self.cursor.execute("""\
-		SELECT email from user'\
+		SELECT email from user\
 		""").fetchall()
+
+	def resetBook(self):
+		self.cursor.execute('update sqlite_sequence set seq = 0 where name = "book"')
+		self.cursor.execute('delete from book')

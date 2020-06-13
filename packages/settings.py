@@ -1,8 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-dot_env = '../.env'
-load_dotenv(dot_env)
+load_dotenv()
 
 ACCOUNT = os.getenv("gmail_account")
 PASSWORD = os.getenv("gmail_password")
