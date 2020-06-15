@@ -9,6 +9,98 @@ header = {
 找書
 target => 書名
 """
+
+def searchBOOKS(target):
+    booksURL="https://search.books.com.tw/search/query/cat/all/key/"+target
+    r = requests.get(booksURL)
+    soup = BeautifulSoup(r.text,"html.parser") 
+    sel = soup.select("ul.searchbook li.item")
+    s=sel[0]
+    
+    link=s.find('a').get('href')
+    spl=link.split('/')
+    if(not(spl[10][0]<='9' and spl[10][0]>='0') and not(spl[10][0]=='E')and not(spl[10][0]=='R')):  
+        return None
+
+    name=s.find('a').get('title')
+    img=s.find('a').find('img').get('data-original')
+    img=img.split('&')[0]
+    temp=s.find_all('a',rel='go_author')
+    writer=""
+    for i in temp:
+        writer+=i.get('title')
+        writer+=' '
+    price=s.find('span',class_="price").find_all('b')[-1].string
+    book={
+            "List":[name,link,img,writer,int(price)]
+        }
+    return book
+    
+
+def searchKINGSTONE(target):
+    kingstoneURL="https://www.kingstone.com.tw/search/search?q="+target
+    r = requests.get(kingstoneURL,headers=header)
+    soup = BeautifulSoup(r.text,"html.parser") 
+    sel = soup.select("li.displayunit div.division1")
+    basicURL="https://www.kingstone.com.tw"
+    s=sel[0]
+    
+    temp=s.find('span',class_='book').string
+    if(temp.find("書")==-1):
+        if(temp.find("雜誌")==-1):
+            return None
+    img=s.find('div',class_='coverbox').find('a').find('img').get('data-src')
+    link=basicURL+s.find('a').get('href')
+    name=s.find('a').find('img').get('title')
+    writer=s.find('div',class_='basic2box').find('span')
+    if(writer==None):
+        writer=None
+    else:
+        temp=writer.find_all('a')
+        writer=""
+        for i in temp:
+            writer+=i.string+' '
+    price=s.find('div',class_='buymixbox').find_all('span')[-2].find('b').string
+    book={
+        "List":[name,link,img,writer,int(price)]
+    }
+    return book
+
+def searchSANMIN(target):
+    sanminURL="https://www.sanmin.com.tw/search/index/?ct=N&qu="+target+"&ls=SD"
+    basicURL="https://www.sanmin.com.tw"
+    r = requests.get(sanminURL)
+    soup = BeautifulSoup(r.text,"html.parser") 
+    sel = soup.select("div.ProductView div.condition")
+    s=sel[0]
+    img=s.find('div',class_='resultBooksImg').find('a').find('img').get('original')
+    name=s.find('h3').find('a').text
+    name=name.split('.')[-1]
+
+    link=basicURL+s.find('div',class_='resultBooksImg').find('a').get('href')
+    if(s.find('span',class_='ProdAu')==None):
+        return None
+        
+    temp=s.find('span',class_='ProdAu').find_all('a')
+    writer=""
+    for i in temp:
+        writer+=i.string+' '
+    price=s.find('span',class_='price')
+    if price==None:
+        price=s.find('div',class_="resultBooksLayout").find('p').string
+        price=price.replace(' ','')
+        price=price.replace('\n','')
+        price=price.replace('\r','')
+        price=price.replace('\xa0','')
+        price=price[3:-1]
+    else:
+        price=price.string
+        
+    book={
+        "List":[name,link,img,writer,int(price)]
+    }
+    return book
+
 def searchbook(target):
     booksURL="https://search.books.com.tw/search/query/cat/all/key/"+target
     kingstoneURL="https://www.kingstone.com.tw/search/search?q="+target
@@ -21,8 +113,9 @@ def searchbook(target):
     for s in sel:
         link=s.find('a').get('href')
         spl=link.split('/')
-        if(not(spl[4][0]<='9' and spl[4][0]>='0') and not(spl[4][0]=='E')and not(spl[4][0]=='R')):
+        if(not(spl[10][0]<='9' and spl[10][0]>='0') and not(spl[10][0]=='E')and not(spl[10][0]=='R')):
             continue
+
         name=s.find('a').get('title')
         img=s.find('a').find('img').get('data-original')
         img=img.split('&')[0]
@@ -32,7 +125,6 @@ def searchbook(target):
             writer+=i.get('title')
             writer+=' '
         price=s.find('span',class_="price").find_all('b')[-1].string
-        
         book={
                 "List":[name,link,img,writer,int(price)]
             }
@@ -100,7 +192,6 @@ def searchbook(target):
                 "List":[name,link,img,writer,int(price)]
             }
         SANMINbook.append(book)
-      #  print(book['List'][2])
     return [BOOKSbook,KINGSTONEbook,SANMINbook]
 
 

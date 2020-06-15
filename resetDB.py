@@ -11,10 +11,12 @@ day = 24*60*60
 
 def UpdateHotBook():
 	mydb.resetHotBook()
+	mydb.updateAllHotBookFromAllBookStore()
 	print("Update Hot Book Done")
 
 def UpdateNewBook():
 	mydb.resetNewBook()
+	mydb.updateAllNewBookFromAllBookStore()
 	print("Update New Book Done")
 
 def UpdateBook():
@@ -30,9 +32,6 @@ def MailNews():
 
 	print("Mail Done")
 
-def run():
-	UpdateHotBook()
-	UpdateNewBook()
-	UpdateBook()
-
-run()
+# UpdateHotBook() # Uncomment it if you want to update hotbook
+# UpdateNewBook() # Uncomment it if you want to update newbook
+# UpdateBook() # Uncomment it if you want to clear book

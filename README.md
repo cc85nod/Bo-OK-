@@ -5,8 +5,9 @@ A web site about ordering book
 ### settings
 1. Copy .env.example to .env and set gmail account and password
 2. Open goolge lesssecureapps
-3. Run `sqlite3 book.db < DBschema/schema.sql` to import sql
-	or copy `book.env.db` to `book.db`
+3. Copy `book.env.db` to `book.db`
+4. Run `python bgCrawling.py` to update newbook and hotbook
+5. Run `python app.py` to run server !
 
 ### run web server
 ```

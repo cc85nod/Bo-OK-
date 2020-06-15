@@ -81,7 +81,7 @@ class DB():
 		self.cursor.execute('delete from newbook')
 		newbooklist = newbook()
 
-		for binfo in newbooklist[0]:       
+		for binfo in newbooklist[0]:
 			self.cursor.execute('select id from newbook where name = ? ',(binfo["List"][0],))
 			tmplist=self.cursor.fetchall()
 			if(tmplist):
@@ -129,50 +129,61 @@ class DB():
 	"""
 	儲存搜尋的結果
 	"""
-	def storeSearch(self, searchlist):
+	def storeSearchBOOKS(self, searchlist, btype="book"):
 		for binfo in searchlist[0]:
-			self.cursor.execute('select id from book where name = ? ',(binfo["List"][0],))
+			self.cursor.execute(f'select id from {btype} where name = ? ',(binfo["List"][0],))
 			tmplist=self.cursor.fetchall()
 			if(tmplist):
 				updatelink = [binfo["List"][1],tmplist[0][0]]
 				updateprice = [binfo["List"][4],tmplist[0][0]]
-				self.cursor.execute('update book set link_books = ? where id = ?', updatelink)
-				self.cursor.execute('update book set price_books = ? where id = ?', updateprice)
+				self.cursor.execute(f'update {btype} set link_books = ? where id = ?', updatelink)
+				self.cursor.execute(f'update {btype} set price_books = ? where id = ?', updateprice)
 				self.CountRank(tmplist[0][0],"search")
 			else:
 				self.cursor.execute('insert into book(name,link_books,img,writer,price_books) values (?,?,?,?,?)', binfo["List"])
-				self.cursor.execute('select id from book where name = ? ',(binfo["List"][0],))
-				tmplist=self.cursor.fetchall()
-				self.CountRank(tmplist[0][0],"search")
-		for binfo in searchlist[1]:
-			self.cursor.execute('select id from book where name = ? ',(binfo["List"][0],))
-			tmplist=self.cursor.fetchall()
-			if(tmplist):
-				updatelink = [binfo["List"][1],tmplist[0][0]]
-				updateprice = [binfo["List"][4],tmplist[0][0]]
-				self.cursor.execute('update book set link_kingstone = ? where id = ?', updatelink)
-				self.cursor.execute('update book set price_kingstone = ? where id = ?', updateprice)
-				self.CountRank(tmplist[0][0],"search")
-			else:
-				self.cursor.execute('insert into book(name,link_kingstone,img,writer,price_kingstone) values (?,?,?,?,?)', binfo["List"])
-				self.cursor.execute('select id from book where name = ? ',(binfo["List"][0],))
-				tmplist=self.cursor.fetchall()
-				self.CountRank(tmplist[0][0],"search")
-		for binfo in searchlist[2]:
-			self.cursor.execute('select id from book where name = ? ',(binfo["List"][0],))
-			tmplist=self.cursor.fetchall()
-			if(tmplist):
-				updatelink = [binfo["List"][1],tmplist[0][0]]
-				updateprice = [binfo["List"][4],tmplist[0][0]]
-				self.cursor.execute('update book set link_sanmin = ? where id = ?', updatelink)
-				self.cursor.execute('update book set price_sanmin = ? where id = ?', updateprice)
-				self.CountRank(tmplist[0][0],"search")
-			else:
-				self.cursor.execute('insert into book(name,link_sanmin,img,writer,price_sanmin) values (?,?,?,?,?)', binfo["List"])
-				self.cursor.execute('select id from book where name = ? ',(binfo["List"][0],))
+				self.cursor.execute(f'select id from {btype} where name = ? ',(binfo["List"][0],))
 				tmplist=self.cursor.fetchall()
 				self.CountRank(tmplist[0][0],"search")
 		self.conn.commit()
+
+	def storeSearchKINGSTONE(self, searchlist, btype="book"):
+		for binfo in searchlist[0]:
+			self.cursor.execute(f'select id from {btype} where name = ? ',(binfo["List"][0],))
+			tmplist=self.cursor.fetchall()
+			if(tmplist):
+				updatelink = [binfo["List"][1],tmplist[0][0]]
+				updateprice = [binfo["List"][4],tmplist[0][0]]
+				self.cursor.execute(f'update {btype} set link_kingstone = ? where id = ?', updatelink)
+				self.cursor.execute(f'update {btype} set price_kingstone = ? where id = ?', updateprice)
+				self.CountRank(tmplist[0][0],"search")
+			else:
+				self.cursor.execute('insert into book(name,link_kingstone,img,writer,price_kingstone) values (?,?,?,?,?)', binfo["List"])
+				self.cursor.execute(f'select id from {btype} where name = ? ',(binfo["List"][0],))
+				tmplist=self.cursor.fetchall()
+				self.CountRank(tmplist[0][0],"search")
+		self.conn.commit()
+
+	def storeSearchSANMIN(self, searchlist, btype="book"):
+		for binfo in searchlist[0]:
+			self.cursor.execute(f'select id from {btype} where name = ? ',(binfo["List"][0],))
+			tmplist=self.cursor.fetchall()
+			if(tmplist):
+				updatelink = [binfo["List"][1],tmplist[0][0]]
+				updateprice = [binfo["List"][4],tmplist[0][0]]
+				self.cursor.execute(f'update {btype} set link_sanmin = ? where id = ?', updatelink)
+				self.cursor.execute(f'update {btype} set price_sanmin = ? where id = ?', updateprice)
+				self.CountRank(tmplist[0][0],"search")
+			else:
+				self.cursor.execute('insert into book(name,link_sanmin,img,writer,price_sanmin) values (?,?,?,?,?)', binfo["List"])
+				self.cursor.execute(f'select id from {btype} where name = ? ',(binfo["List"][0],))
+				tmplist=self.cursor.fetchall()
+				self.CountRank(tmplist[0][0],"search")
+		self.conn.commit()
+
+	def storeSearch(self, searchlist):
+		self.storeSearchBOOKS([searchlist[0]])
+		self.storeSearchKINGSTONE([searchlist[1]])
+		self.storeSearchSANMIN([searchlist[2]])
 
 	"""
 	計算書籍在各熱門榜單的出現次數
@@ -348,6 +359,45 @@ class DB():
 		SELECT email from user\
 		""").fetchall()
 
+	def updateAllHotBookFromAllBookStore(self):
+		datas = self.cursor.execute("""\
+		SELECT * from hotbook\
+		""").fetchall()
+
+		for name in datas:
+			try:
+				if not name[4]: # no BOOKS
+					data = searchBOOKS(name[1])
+					self.storeSearchBOOKS([[data]], "hotbook")
+				if not name[6]: # no KINGSTONE
+					data = searchKINGSTONE(name[1])
+					self.storeSearchKINGSTONE([[data]], "hotbook")
+				if not name[8]: # no SANMIN
+					data = searchSANMIN(name[1])
+					self.storeSearchSANMIN([[data]], "hotbook")
+			except IndexError:
+				continue
+
+	def updateAllNewBookFromAllBookStore(self):
+		datas = self.cursor.execute("""\
+		SELECT * from newbook\
+		""").fetchall()
+
+		for name in datas:
+			try:
+				if not name[4]: # no BOOKS
+					data = searchBOOKS(name[1])
+					self.storeSearchBOOKS([[data]], "newbook")
+				if not name[6]: # no KINGSTONE
+					data = searchKINGSTONE(name[1])
+					self.storeSearchKINGSTONE([[data]], "newbook")
+				if not name[8]: # no SANMIN
+					data = searchSANMIN(name[1])
+					self.storeSearchSANMIN([[data]], "newbook")
+			except IndexError:
+				continue
+
 	def resetBook(self):
 		self.cursor.execute('update sqlite_sequence set seq = 0 where name = "book"')
 		self.cursor.execute('delete from book')
+		self.conn.commit()
