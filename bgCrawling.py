@@ -34,8 +34,5 @@ def run():
 	UpdateHotBook()
 	UpdateNewBook()
 	UpdateBook()
-	# MailNews()
 
-while True:
-	run()
-	time.sleep(day)
+run()
