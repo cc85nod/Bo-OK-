@@ -365,6 +365,7 @@ class DB():
 		""").fetchall()
 
 		for name in datas:
+			print(name)
 			try:
 				if not name[4]: # no BOOKS
 					data = searchBOOKS(name[1])
@@ -375,7 +376,7 @@ class DB():
 				if not name[8]: # no SANMIN
 					data = searchSANMIN(name[1])
 					self.storeSearchSANMIN([[data]], "hotbook")
-			except IndexError:
+			except (IndexError, ConnectionError):
 				continue
 
 	def updateAllNewBookFromAllBookStore(self):
@@ -384,6 +385,7 @@ class DB():
 		""").fetchall()
 
 		for name in datas:
+			print(name)
 			try:
 				if not name[4]: # no BOOKS
 					data = searchBOOKS(name[1])
@@ -394,7 +396,7 @@ class DB():
 				if not name[8]: # no SANMIN
 					data = searchSANMIN(name[1])
 					self.storeSearchSANMIN([[data]], "newbook")
-			except IndexError:
+			except (IndexError, ConnectionError):
 				continue
 
 	def resetBook(self):
