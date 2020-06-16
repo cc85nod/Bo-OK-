@@ -5,6 +5,7 @@ column: id, name, writer, img, price, link
 """
 import sqlite3
 import random
+import time
 from packages.BookCrawler import *
 
 class DB():
@@ -329,7 +330,7 @@ class DB():
 		ids = self.cursor.fetchall()
 		rank1book = self.getHotBooksByIds(ids)
 
-		return rank3book+rank2book+rank1book
+		return (rank3book+rank2book+rank1book)[:40]
 
 	def randomNewBook(self):
 		
@@ -361,21 +362,25 @@ class DB():
 
 	def updateAllHotBookFromAllBookStore(self):
 		datas = self.cursor.execute("""\
-		SELECT * from hotbook\
+		SELECT * from hotbook limit 40\
 		""").fetchall()
 
 		for name in datas:
-			print(name)
+			time.sleep(20)
+			print(f"[LOG]:  current hot book is {name[0]} {name[1]}")
 			try:
 				if not name[4]: # no BOOKS
 					data = searchBOOKS(name[1])
-					self.storeSearchBOOKS([[data]], "hotbook")
+					if data:
+						self.storeSearchBOOKS([[data]], "hotbook")
 				if not name[6]: # no KINGSTONE
 					data = searchKINGSTONE(name[1])
-					self.storeSearchKINGSTONE([[data]], "hotbook")
+					if data:
+						self.storeSearchKINGSTONE([[data]], "hotbook")
 				if not name[8]: # no SANMIN
 					data = searchSANMIN(name[1])
-					self.storeSearchSANMIN([[data]], "hotbook")
+					if data:
+						self.storeSearchSANMIN([[data]], "hotbook")
 			except (IndexError, ConnectionError):
 				continue
 
@@ -385,17 +390,21 @@ class DB():
 		""").fetchall()
 
 		for name in datas:
-			print(name)
+			time.sleep(20)
+			print(f"[LOG]:  current new book is {name[0]} {name[1]}")
 			try:
 				if not name[4]: # no BOOKS
 					data = searchBOOKS(name[1])
-					self.storeSearchBOOKS([[data]], "newbook")
+					if data:
+						self.storeSearchBOOKS([[data]], "newbook")
 				if not name[6]: # no KINGSTONE
 					data = searchKINGSTONE(name[1])
-					self.storeSearchKINGSTONE([[data]], "newbook")
+					if data:
+						self.storeSearchKINGSTONE([[data]], "newbook")
 				if not name[8]: # no SANMIN
 					data = searchSANMIN(name[1])
-					self.storeSearchSANMIN([[data]], "newbook")
+					if data:
+						self.storeSearchSANMIN([[data]], "newbook")
 			except (IndexError, ConnectionError):
 				continue
 

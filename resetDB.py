@@ -33,5 +33,5 @@ def MailNews():
 	print("Mail Done")
 
 UpdateHotBook() # Uncomment it if you want to update hotbook
-# UpdateNewBook() # Uncomment it if you want to update newbook
-# UpdateBook() # Uncomment it if you want to clear book
+UpdateNewBook() # Uncomment it if you want to update newbook
+UpdateBook() # Uncomment it if you want to clear book

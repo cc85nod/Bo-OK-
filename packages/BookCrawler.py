@@ -303,6 +303,8 @@ def newbook():
             "List":[name,link,img,writer,int(price)]
         }
         BOOKSbook.append(book)
+        if(len(BOOKSbook)==30):
+            break
 
     basicURL="https://www.kingstone.com.tw"
     r = requests.get("https://www.kingstone.com.tw/BestSeller/news/book",headers=header) 
@@ -326,12 +328,13 @@ def newbook():
             "List":[name,link,img,writer,int(price)]
         }
         KINGSTONEbook.append(book)
-
+        if(len(KINGSTONEbook)==30):
+            break
 
 
     basicURL="https://www.sanmin.com.tw"    
     SANMINbook=[]
-    for i in range(1):#如果要抓少一點改這邊 1次=20本
+    for i in range(2):#如果要抓少一點改這邊 1次=20本
         r = requests.get(basicURL+"/promote/hotbook/?id=00&vs=grid&pi="+str(i+1)+"&vs=list") 
         soup = BeautifulSoup(r.text,"html.parser") 
         sel = soup.find('div',id='normal-list').select("div.condition")
@@ -354,6 +357,8 @@ def newbook():
                 "List":[name,link,img,writer,int(price)]
             }
             SANMINbook.append(book)
+            if(len(SANMINbook)==30):
+                return [BOOKSbook,KINGSTONEbook,SANMINbook]
 
 
     return [BOOKSbook,KINGSTONEbook,SANMINbook]
